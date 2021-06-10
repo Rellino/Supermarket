@@ -3,10 +3,11 @@ random a uno dei settori
 class for the Supermarcket: gestire tutto entrata movimento e uscita uscita finale alla chiusura 
 class for the customers minuto per minito la posizione
 """
-#%%
+
 
 #built-in libraries
 import datetime as dt
+import time
 
 #import other libraries
 import numpy as np
@@ -17,7 +18,6 @@ from faker import Faker
 import proba
 
 
-#%%
 class Customer:
     """
     a single customer that moves through the supermarket
@@ -30,15 +30,15 @@ class Customer:
         self.budget = budget
 
     def __repr__(self):
-        return f'<Customer {self.name} is in {self.state}>'
+        return f'{self.name} is in {self.state}.'
 
 
-    def first_state(self):
-        '''
-        Sets the first aile for set customer
-        Returns nothing.
-        '''
-        self.state = np.random.choice(['spices', 'drinks', 'fruit', 'dairy'], p=proba.ent_prob)
+    # def first_state(self):
+    #     '''
+    #     Sets the first aile for set customer
+    #     Returns nothing.
+    #     '''
+    #     self.state = np.random.choice(['spices', 'drinks', 'fruit', 'dairy'], p=proba.ent_prob)
 
     def next_state(self):
         '''
@@ -76,101 +76,118 @@ class Customer:
             return True
 
 
-# #%%
 
-# cust1 = Customer("Jake", budget=50)
-# cust2 = Customer("Margaret", "spices")
-
-# print(cust1.name, cust1.state)
-# print(cust2.name, cust2.budget)
-
-# print(cust1)
-# cust1.is_active()
-
-# # %%
-# cust1.first_state()
-# #print(cust1.state)
-# print(cust1)
-# #%%
-# for i in range(20):
-#     cust1.next_state()
-#     print(cust1)
-
-
-#%%
-
-class Supermarket:
+class SuperMarket:
     """manages multiple Customer instances that are currently in the market.
     """
 
     def __init__(self):        
         '''a list of Customer objects'''
         self.customers = []
-        self.minutes = 0
-        self.last_id = 0
+        self.minutes = dt.datetime(today.year,today.month,today.day,6,50)
+        #self.last_id = 0
+        self.state = 'closed'
 
     def __repr__(self):
-        return ''
+        return f'{self.minutes} – The supermarket is {self.state}: currently, there are {len(self.customers)} customers inside.'
 
     def get_time(self):
-        """current time in HH:MM format,
+        """opens and closes the supermarket,
+        and pushes customers to the checkout,
         """
+        if self.minutes.hour >= 22 or self.minutes.hour <= 6 and self.minutes.minute <= 59:
+            print(f'{self.minutes} - The supermarket is closed. It will reopen at 7 AM.')
+            self.state = 'closed'
+        elif self.minutes.hour == 21 and self.minutes.minute == 57:
+            for cust in self.customers:
+                if cust.is_active() == True:
+                    cust.state = 'checkout'
+                    #print(f'{self.minutes} – {cust}')
+        elif self.minutes.hour == 7 and self.minutes.minute == 0:
+            print(f'{self.minutes} - The supermarket has opened!')
+            self.state = 'open'
+        else:
+            self.state = 'open'
+
         return None
 
-    def print_customers(self):
-        """print all customers with the current time and id in CSV format.
+    def add_new_customers(self):
+        """generate new customers at their initial location based on the fluxes illustrated in the EDA.
         """
+        if self.minutes.hour >= 22 or self.minutes.hour <= 6 and self.minutes.minute <= 59:
+            pass
+        else:
+            tm = str(self.minutes)[-8:]
+            try:
+                cust_no = int(proba.entrance_number.loc[tm])
+            except:
+                cust_no = 0
+            for cust in range(cust_no):
+                c = Customer(f.name())
+                print(f'{self.minutes} - {c.name} has entered the supermarket.')
+                self.customers.append(c)
+
         return None
 
+    
     def next_minute(self):
-        """propagates all customers to the next state.
+        """increase the time of the supermarket by one minute,
+        propagates all customers to the next state.
         """
+        self.minutes = self.minutes + dt.timedelta(minutes=1)
+        for cust in self.customers:
+            cust.next_state()
+            print(f'{self.minutes} – {cust}')
+
         return None
     
-    def add_new_customers(self):
-        """randomly creates new customers.
-        """
-        return None
-
-    def remove_exitsting_customers(self):
+    
+    def remove_exiting_customers(self):
         """removes every customer that is not active any more.
         """
+        for cust in self.customers:
+            if cust.is_active() == False:
+                print(f'{self.minutes} - {cust.name} has left the supermarket.')
+                self.customers.remove(cust)
+
         return None
 
+    def record_customers(self):
+        """append the state of different customers to a log DataFrame.
+        """
+        df = pd.DataFrame(columns=['time','customer','location'])
+        for cust in self.customers:
+            if cust.state == 'checkout':
+                final_st = 'checkout and leave'
+            else:
+                final_st = cust.state
+            row = pd.DataFrame(data=[str(self.minutes)[-8:],cust.name,final_st], index=['time','customer','location']).transpose()
+            df = pd.concat([df,row], ignore_index=True)
+
+        return df 
 
 
-#%%
 
 if __name__ == "__main__":
+    #output DataFrame
+    record = pd.DataFrame(columns=['time','customer','location'])
+
+    #Name faker
+    today = dt.date.today()
+    f = Faker()
     s = SuperMarket()
 
-    tieme_counter = 
-    while True:
+    #Loop
+    for i in range(100):
+        s.get_time()
+        s.add_new_customers()
+        df = s.record_customers()
+        record = pd.concat([record,df], ignore_index=True)
+        s.remove_exiting_customers()
+        s.next_minute()
         
-        s.entrance/start 
+        #time.sleep(0.5)
 
-        if len(s.clients) > 0:
-            s.move()
-        else:
-            print('is closed')
-        
-        ....
-
-#%%
-#TIME COUNTER
-#today = dt.date.today()
-#counter = dt.datetime(today.year,today.month,today.day,7)
-#counter = counter + dt.timedelta(minutes=1)  # aggiunge un minuto
-#print(counter)
-#print(f'0{counter.hour}:0{counter.minute}')
-
-
-#customers that enter
-#int(behzad.entrance_number.loc['07:04:00'])
-
-#Name faker
-f = Faker()
-nm = f.name()
-nm
-
-# %%
+#output file
+record.to_csv('output/MCMC_sim_log.csv',sep=';')
+    

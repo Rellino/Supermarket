@@ -40,17 +40,19 @@ trans_matrix
 #%%
 # random probability for entrance (for visualization purposes)
 
-#entrance = np.identity(1)
+entrance = np.identity(1)
+
 
 # Add a random drift term.  We can guarantee that the diagonal terms
 
-#entrance = entrance + np.random.uniform(low=0. , size=(1, 4))
+entrance = entrance + np.random.uniform(low=0. , size=(1, 4))
 
 # Lastly, divide by row-wise sum to normalize to 1.
 
-#ent_prob = entrance / entrance.sum(axis=1, keepdims=1)
+ent_prob = entrance / entrance.sum(axis=1, keepdims=1)
 
-ent_prob = np.array([0.28, 0.15, 0.37, 0.20])
+
+ent_prob = ent_prob.reshape(4,)
 ent_prob
 
 #%%
@@ -61,6 +63,8 @@ entrance_number = (round(
     .count()
     / 5, 0)
 )
+remaining_minutes = pd.DataFrame(data=np.zeros(9,),columns=['cust_id'],index=['21:51:00','21:52:00','21:53:00','21:54:00','21:55:00','21:56:00','21:57:00','21:58:00','21:59:00'])
+entrance_number = pd.concat([entrance_number,remaining_minutes])
 entrance_number
 #%%
 # def get_customer_number(time):
@@ -77,7 +81,6 @@ entrance_number
 
 
 #%%
-
 
 
 # %%
