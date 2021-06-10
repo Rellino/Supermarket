@@ -4,10 +4,18 @@ class for the Supermarcket: gestire tutto entrata movimento e uscita uscita fina
 class for the customers minuto per minito la posizione
 """
 #%%
+
+#built-in libraries
 import datetime as dt
+
+#import other libraries
 import numpy as np
 import pandas as pd
-import probs
+from faker import Faker
+
+#import scripts 
+import proba
+
 
 #%%
 class Customer:
@@ -22,87 +30,112 @@ class Customer:
         self.budget = budget
 
     def __repr__(self):
-        return f'<Customer {self.name} in {self.state}>'
+        return f'<Customer {self.name} is in {self.state}>'
 
 
     def first_state(self):
         '''
+        Sets the first aile for set customer
+        Returns nothing.
+        '''
+        self.state = np.random.choice(['spices', 'drinks', 'fruit', 'dairy'], p=proba.ent_prob)
+
+    def next_state(self):
+        '''
         Propagates the customer to the next state.
         Returns nothing.
         '''
-        self.state = random.choice(['spices', 'drinks', 'fruit', 'dairy'])
+        #WARNING: CHECK THE ORDER OF THE AISLES WHEN THE ACTUAL MATRIX ARRIVES
+        aisles = ['checkout','dairy','drinks','fruit','spices']
 
-#%%
-
-cust1 = Customer("Jake", budget=50)
-cust2 = Customer("Margaret", "spices")
-
-print(cust1.name, cust1.state)
-print(cust2.name, cust2.budget)
-
-print(cust1)
-
-# %%
-print(cust1.first_state())
-
-
-#%%
-class SuperMarket:
-
-    def __init__(self):
-        self.clients = []
-
-    def enter(self, client):
-        self.clients.append(client)
-        print('f{client.name} has entered Rewe')
-
-    def next_min(self):
-        for a in self.animals:
-            a.next_min()
-
-    def all_out(self):
-
-#%%
-
-# Supermarket_start
-
-#class Supermarket:
-    #"""manages multiple Customer instances that are currently in the market.
-    #"""
-
-    #def __init__(self):        
-        # a list of Customer objects
-        #self.customers = []
-       # self.minutes = 0
-        #self.last_id = 0
-
-    #def __repr__(self):
-        #return ''
-
-    #def get_time(self):
-        #"""current time in HH:MM format,
-        #"""
-        #return None
-
-    #def print_customers(self):
-        #"""print all customers with the current time and id in CSV format.
-        #"""
-        #return None
-
-    #def next_minute(self):
-        #"""propagates all customers to the next state.
-        #"""
-        #return None
+        if self.state in aisles:
+        
+            if self.state == 'dairy':
+                initial_state = np.array([0.0,1.0,0.0,0.0,0.0])
+            elif self.state == 'drinks':
+                initial_state = np.array([0.0,0.0,1.0,0.0,0.0])
+            elif self.state == 'fruit':
+                initial_state = np.array([0.0,0.0,0.0,1.0,0.0])
+            elif self.state == 'spices':
+                initial_state = np.array([0.0,0.0,0.0,0.0,1.0])
+            elif self.state == 'checkout':
+                initial_state = np.array([1.0,0.0,0.0,0.0,0.0])
+            
+            next_state_prob = np.dot(initial_state,proba.prob)
+            
+            self.state = np.random.choice(aisles, p=next_state_prob)
+        
+        else:
+            self.state = np.random.choice(['spices', 'drinks', 'fruit', 'dairy'], p=proba.ent_prob)
     
-    #def add_new_customers(self):
-        #"""randomly creates new customers.
-        #"""
-        #return None
+    def is_active(self):
+        """Returns True if the customer has not reached the checkout yet."""
+        if self.state == 'checkout':
+            return False
+        else:
+            return True
 
-    #def remove_exitsting_customers(self):
-        #"""removes every customer that is not active any more.
-        #"""
-        #return None
+
+# #%%
+
+# cust1 = Customer("Jake", budget=50)
+# cust2 = Customer("Margaret", "spices")
+
+# print(cust1.name, cust1.state)
+# print(cust2.name, cust2.budget)
+
+# print(cust1)
+# cust1.is_active()
+
+# # %%
+# cust1.first_state()
+# #print(cust1.state)
+# print(cust1)
+# #%%
+# for i in range(20):
+#     cust1.next_state()
+#     print(cust1)
+
+
+#%%
+
+class Supermarket:
+    """manages multiple Customer instances that are currently in the market.
+    """
+
+    def __init__(self):        
+        '''a list of Customer objects'''
+        self.customers = []
+        self.minutes = 0
+        self.last_id = 0
+
+    def __repr__(self):
+        return ''
+
+    def get_time(self):
+        """current time in HH:MM format,
+        """
+        return None
+
+    def print_customers(self):
+        """print all customers with the current time and id in CSV format.
+        """
+        return None
+
+    def next_minute(self):
+        """propagates all customers to the next state.
+        """
+        return None
+    
+    def add_new_customers(self):
+        """randomly creates new customers.
+        """
+        return None
+
+    def remove_exitsting_customers(self):
+        """removes every customer that is not active any more.
+        """
+        return None
 
 
 
@@ -130,3 +163,14 @@ if __name__ == "__main__":
 #counter = counter + dt.timedelta(minutes=1)  # aggiunge un minuto
 #print(counter)
 #print(f'0{counter.hour}:0{counter.minute}')
+
+
+#customers that enter
+#int(behzad.entrance_number.loc['07:04:00'])
+
+#Name faker
+f = Faker()
+nm = f.name()
+nm
+
+# %%
