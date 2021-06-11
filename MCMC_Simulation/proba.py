@@ -13,17 +13,17 @@ import numpy as np
 
 #%%
 # loading the cleaned data that was built in EDA.ipynb file
-df = pd.read_csv('../data/cleaned_up/clean_final.csv', index_col=0)
-
+final = pd.read_csv('../data/cleaned_up/clean_final.csv', index_col=0)
+final
 #%% [markdown]
 ### Building Transition Matrix
 #%%
 # adding next location column 
-df['next_location'] = df['location'].shift(-1)
+final['next_location'] = final['location'].shift(-1)
 # frequency table for number of customers in each state
-df.groupby('location')['next_location'].value_counts().unstack()
+final.groupby('location')['next_location'].value_counts().unstack()
 # leaving the 'checkout' rows from location to be able to add the 'absorbing state' later on
-df_1 = df[df['location'] != 'checkout'].copy()
+df_1 = final[final['location'] != 'checkout'].copy()
 # probability table without checkout in location
 trans_without_checkout= pd.crosstab(df_1['location'], df_1['next_location'], normalize=0)
 # Hardcoding the absorbing state into transition matrix
@@ -58,7 +58,7 @@ ent_prob
 #%%
 # dataframe with the time and average number of daily customers entering the supermarket per minute
 entrance_number = (round(
-    df[df["section_order"] == "first"]
+    final[final["section_order"] == "first"]
     .groupby(["time"])[["cust_id"]]
     .count()
     / 5, 0)
