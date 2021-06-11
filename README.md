@@ -1,6 +1,5 @@
 # Supermarket Markov Chain Simulation by The Statistically Significant Four
-The Project runs a Monte Carlo simulation to predict the customers' behavior in 
-a hypothetical supermarket with below layout
+The Project runs a Monte Carlo simulation to predict the customers' behavior in a hypothetical supermarket with below layout
 ![Supermarket layout](supermarkt.png)
 
 ## Repo Structure
@@ -20,5 +19,3 @@ a hypothetical supermarket with below layout
     * For cleaned and final data, ready for calucating transition matrix -> data -> cleaned-up
 
 ![MCMC Simulation](simulation.gif)
-
-
