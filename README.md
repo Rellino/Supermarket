@@ -20,4 +20,4 @@ The Project runs a Monte Carlo simulation to predict the customers' behavior in 
 - For the raw daily supermarket data that form the dataset of this model (in csv format) -> data
 - For cleaned up data as created by EDA.ipynb, and ready for calucating transition matrix -> data/cleaned-up
 
-![MCMC Simulation](simulation.gif)
+![MCMC Simulation](Simulator.gif)
