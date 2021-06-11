@@ -7,7 +7,7 @@
     THANK YOU BEHZAD!!!  
 """
 
-#%%
+
 import pandas as pd 
 import numpy as np
 
@@ -80,7 +80,3 @@ entrance_number
 #             return('Supermarket is closed') 
 
 
-#%%
-
-
-# %%

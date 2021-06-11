@@ -1,15 +1,15 @@
-""" 
-random a uno dei settori
-class for the Supermarcket: gestire tutto entrata movimento e uscita uscita finale alla chiusura 
-class for the customers minuto per minito la posizione
-"""
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Markov Chain Montecarlo Simulator of the daily customer flux in a supermarket
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-#built-in libraries
+#import built-in libraries
 import datetime as dt
 import time
 from colorama import Fore, Style, init
 init()
+import logging
+logging.basicConfig(level=logging.WARNING, format='%(message)s')
 
 #import other libraries
 import numpy as np
@@ -100,18 +100,20 @@ class SuperMarket:
         """
         
         if self.minutes.hour > 22 or self.minutes.hour <= 6 and self.minutes.minute <= 59:
-            print(f'{self.minutes} - The supermarket is closed. It will reopen at 7 AM.')
-            self.state = 'closed'
+            logging.warning(f'{self.minutes} - The supermarket is closed. It will reopen at 7 AM.')
+            
         elif self.minutes.hour == 22 and self.minutes.minute == 0:
-            print(Fore.RED+f'\n{self.minutes} - The supermarket has closed.\n'+Style.RESET_ALL)
-            self.state = 'open' 
+            logging.warning(Fore.RED+f'{self.minutes} - The supermarket has closed.'+Style.RESET_ALL)
+            logging.warning('Run this script again if you wish to run another MC simulation.\n')
+            self.state = 'closed'
+            
         elif self.minutes.hour == 21 and self.minutes.minute == 57:
             for cust in self.customers:
                 if cust.is_active() == True:
                     cust.state = 'checkout'
-                    #print(f'{self.minutes} – {cust}')
+                   
         elif self.minutes.hour == 7 and self.minutes.minute == 0:
-            print(Fore.GREEN+f'\n{self.minutes} - The supermarket has opened its doors!\n'+Style.RESET_ALL)
+            logging.warning(Fore.GREEN+f'{self.minutes} - The supermarket has opened its doors!\n'+Style.RESET_ALL)
             self.state = 'open'
         
         else:
@@ -132,7 +134,7 @@ class SuperMarket:
                 cust_no = 0
             for cust in range(cust_no):
                 c = Customer(f.name())
-                print(Fore.YELLOW+f'{self.minutes} - {c.name} has entered the supermarket.'+Style.RESET_ALL)
+                logging.warning(Fore.YELLOW+f'{self.minutes} - {c.name} has entered the supermarket.'+Style.RESET_ALL)
                 self.customers.append(c)
 
         return None
@@ -143,12 +145,12 @@ class SuperMarket:
         propagates all customers to the next state.
         """
         self.minutes = self.minutes + dt.timedelta(minutes=1)
-        if self.minutes.hour in [0,1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23] and self.minutes.minute == 0:
-            print(self)
+        if self.minutes.hour in [i for i in range (0,24)] and self.minutes.minute == 0:
+            logging.warning(self)
 
         for cust in self.customers:
             cust.next_state()
-            print(f'{self.minutes} – {cust}')
+            logging.warning(f'{self.minutes} – {cust}')
        
         return None
     
@@ -158,7 +160,7 @@ class SuperMarket:
         """
         for cust in self.customers:
             if cust.is_active() == False:
-                print(Fore.BLUE+f'{self.minutes} - {cust.name} has left the supermarket.'+Style.RESET_ALL)
+                logging.warning(Fore.BLUE+f'{self.minutes} - {cust.name} has left the supermarket.'+Style.RESET_ALL)
                 self.customers.remove(cust)
 
         return None
@@ -180,17 +182,23 @@ class SuperMarket:
 
 
 if __name__ == "__main__":
-        
+
     #output DataFrame
     record = pd.DataFrame(columns=['time','customer','location'])
 
-    #Name faker
+    #Taking the current date and hour
     today = dt.date.today()
+    now = dt.datetime.now().strftime("%Hh%M")
+
+    #Name faker
     f = Faker()
+    
+    #Class instatiation
     s = SuperMarket()
 
     #title
-    print(Figlet().renderText('One Day at the Supermarket\n'))
+    logging.warning(Figlet().renderText('One Day at the Supermarket\n'))
+    logging.warning('This is a Markov Chain Montecarlo simulator of a supermarket over a single working day (7:00-22:00).\nThe simulation will start in a few seconds...\n')
 
 
     #Loop
@@ -202,8 +210,8 @@ if __name__ == "__main__":
         s.remove_exiting_customers()
         s.next_minute()
         
-        time.sleep(0.5)
+        time.sleep(0.1)
 
-#output file
-record.to_csv('output/MCMC_sim_log.csv',sep=';')
+    #output file
+    record.to_csv(f'output/MCMCsim_supermarket_{today}_{now}.csv',sep=';')
     
