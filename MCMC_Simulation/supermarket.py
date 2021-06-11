@@ -239,7 +239,7 @@ if __name__ == "__main__":
         s.remove_exiting_customers()
         s.next_minute()
 
-        time.sleep(0.1)
+        time.sleep(0.2)
 
     # output file
     path = "output"
