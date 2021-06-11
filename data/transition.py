@@ -11,7 +11,7 @@ import numpy as np
 
 #%%
 # loading the cleaned data that was built in EDA.ipynb file
-df = pd.read_csv('clean_final.csv', index_col=0)
+df = pd.read_csv('data/cleaned_up/clean_final.csv', index_col=0)
 
 #%% [markdown]
 ### Building Transition Matrix

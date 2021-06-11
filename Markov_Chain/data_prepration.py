@@ -27,4 +27,17 @@ state
 
 #%%
 # Random walk on Markov-Chain
-n
+n = 15
+start_state = 0 # we can change the state
+print(state[start_state], "---->", end = " ") 
+prev_state = start_state
+
+while n-1:
+    curr_state = np.random.choice([0,1,2,3,4], p=A[prev_state])
+    print(state[curr_state], "---->", end = " "))
+    prev_state = curr_state
+    n-=1
+print('stop') 
+
+#%%[markdown]
+### Approach 1 : Monte Carlo -> Finding the Staionary state
