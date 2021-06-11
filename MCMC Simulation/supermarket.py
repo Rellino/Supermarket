@@ -8,11 +8,14 @@ class for the customers minuto per minito la posizione
 #built-in libraries
 import datetime as dt
 import time
+from colorama import Fore, Style, init
+init()
 
 #import other libraries
 import numpy as np
 import pandas as pd
 from faker import Faker
+from pyfiglet import Figlet
 
 #import scripts 
 import proba
@@ -89,23 +92,28 @@ class SuperMarket:
         self.state = 'closed'
 
     def __repr__(self):
-        return f'{self.minutes} – The supermarket is {self.state}: currently, there are {len(self.customers)} customers inside.'
+        return Fore.CYAN+f'\n{self.minutes} – The supermarket is {self.state}: currently, there are {len(self.customers)} customers inside.\n'+Style.RESET_ALL
 
     def get_time(self):
         """opens and closes the supermarket,
         and pushes customers to the checkout,
         """
-        if self.minutes.hour >= 22 or self.minutes.hour <= 6 and self.minutes.minute <= 59:
+        
+        if self.minutes.hour > 22 or self.minutes.hour <= 6 and self.minutes.minute <= 59:
             print(f'{self.minutes} - The supermarket is closed. It will reopen at 7 AM.')
             self.state = 'closed'
+        elif self.minutes.hour == 22 and self.minutes.minute == 0:
+            print(Fore.RED+f'\n{self.minutes} - The supermarket has closed.\n'+Style.RESET_ALL)
+            self.state = 'open' 
         elif self.minutes.hour == 21 and self.minutes.minute == 57:
             for cust in self.customers:
                 if cust.is_active() == True:
                     cust.state = 'checkout'
                     #print(f'{self.minutes} – {cust}')
         elif self.minutes.hour == 7 and self.minutes.minute == 0:
-            print(f'{self.minutes} - The supermarket has opened!')
+            print(Fore.GREEN+f'\n{self.minutes} - The supermarket has opened its doors!\n'+Style.RESET_ALL)
             self.state = 'open'
+        
         else:
             self.state = 'open'
 
@@ -124,7 +132,7 @@ class SuperMarket:
                 cust_no = 0
             for cust in range(cust_no):
                 c = Customer(f.name())
-                print(f'{self.minutes} - {c.name} has entered the supermarket.')
+                print(Fore.YELLOW+f'{self.minutes} - {c.name} has entered the supermarket.'+Style.RESET_ALL)
                 self.customers.append(c)
 
         return None
@@ -135,10 +143,13 @@ class SuperMarket:
         propagates all customers to the next state.
         """
         self.minutes = self.minutes + dt.timedelta(minutes=1)
+        if self.minutes.hour in [0,1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23] and self.minutes.minute == 0:
+            print(self)
+
         for cust in self.customers:
             cust.next_state()
             print(f'{self.minutes} – {cust}')
-
+       
         return None
     
     
@@ -147,7 +158,7 @@ class SuperMarket:
         """
         for cust in self.customers:
             if cust.is_active() == False:
-                print(f'{self.minutes} - {cust.name} has left the supermarket.')
+                print(Fore.BLUE+f'{self.minutes} - {cust.name} has left the supermarket.'+Style.RESET_ALL)
                 self.customers.remove(cust)
 
         return None
@@ -169,6 +180,7 @@ class SuperMarket:
 
 
 if __name__ == "__main__":
+        
     #output DataFrame
     record = pd.DataFrame(columns=['time','customer','location'])
 
@@ -177,8 +189,12 @@ if __name__ == "__main__":
     f = Faker()
     s = SuperMarket()
 
+    #title
+    print(Figlet().renderText('One Day at the Supermarket\n'))
+
+
     #Loop
-    for i in range(100):
+    for i in range(920):
         s.get_time()
         s.add_new_customers()
         df = s.record_customers()
@@ -186,7 +202,7 @@ if __name__ == "__main__":
         s.remove_exiting_customers()
         s.next_minute()
         
-        #time.sleep(0.5)
+        time.sleep(0.5)
 
 #output file
 record.to_csv('output/MCMC_sim_log.csv',sep=';')
