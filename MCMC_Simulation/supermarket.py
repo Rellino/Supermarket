@@ -4,6 +4,7 @@ Markov Chain Montecarlo Simulator of the daily customer flux in a supermarket
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 #import built-in libraries
+import os
 import datetime as dt
 import time
 from colorama import Fore, Style, init
@@ -104,7 +105,7 @@ class SuperMarket:
             
         elif self.minutes.hour == 22 and self.minutes.minute == 0:
             logging.warning(Fore.RED+f'{self.minutes} - The supermarket has closed.'+Style.RESET_ALL)
-            logging.warning('Run this script again if you wish to run another MC simulation.\n')
+            
             self.state = 'closed'
             
         elif self.minutes.hour == 21 and self.minutes.minute == 57:
@@ -213,5 +214,9 @@ if __name__ == "__main__":
         time.sleep(0.1)
 
     #output file
+    path='output'
+    if not os.path.exists(path):
+        os.makedirs(path)
     record.to_csv(f'output/MCMCsim_supermarket_{today}_{now}.csv',sep=';')
+    logging.warning(f"Run this script again if you wish to run another MC simulation.\nThe file 'MCMCsim_supermarket_{today}_{now}.csv' that contains the data of this simulation is now available in the output folder.\n")
     
