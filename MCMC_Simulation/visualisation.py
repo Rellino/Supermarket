@@ -28,12 +28,12 @@ MARKET = """
 class SupermarketMap:
     """Visualizes the supermarket background"""
 
-    def __init__(self, layout=MARKET, tiles):
+    def __init__(self, layout, tiles):
         """
         layout : a string with each character representing a tile
         tiles   : a numpy array containing all the tile images
         """
-        self.layout = MARKET
+
         self.tiles = tiles
         # split the layout string into a two dimensional matrix
         self.contents = [list(row) for row in layout.split("\n")]
@@ -150,7 +150,7 @@ class GhostCustomer(Customer):
     a single ghost-customer that moves through the dungeon supermarket
     """
 
-    def __init__(self, row=10, col=14):
+    def __init__(self, supermarket, avatar, row, col):
         """
         supermarket: A SuperMarketMap object
         avatar : a numpy array containing a 32x32 tile image
@@ -159,10 +159,10 @@ class GhostCustomer(Customer):
         """
         super().__init__('a pink gost')
         
-        self.supermarket = SupermarketMap()
+        self.supermarket = SupermarketMap(MARKET, tiles)
         self.avatar = self.supermarket.extract_tile(7,2)
-        self.row = 10
-        self.col = 14
+        self.row = row
+        self.col = col
 
     def __repr__(self):
         return f"{self.name} is in {self.state}."
@@ -170,7 +170,7 @@ class GhostCustomer(Customer):
     def draw(self, frame):
       x = self.col * TILE_SIZE
       y = self.row * TILE_SIZE
-      frame[y:self.avatar.shape[0], x:self.avatar.shape[1]] = self.avatar
+      frame[x:x+self.avatar.shape[0], y:y+self.avatar.shape[1]] = self.avatar
 
     
 
@@ -179,15 +179,16 @@ class GhostCustomer(Customer):
 
 if __name__ == "__main__":
 
-    background = np.zeros((500, 700, 3), np.uint8)
+    background = np.zeros((512, 704, 3), np.uint8)
     tiles = cv2.imread("../data/images/tiles.png")
 
     market = SupermarketMap(MARKET, tiles)
-    ghost = GhostCustomer()
+    ghost = GhostCustomer(market, market.extract_tile(7,2),21,14)
 
     while True:
         frame = background.copy()
         market.draw(frame)
+        ghost.draw(frame)
 
         # https://www.ascii-code.com/
         key = cv2.waitKey(1)
