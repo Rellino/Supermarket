@@ -37,12 +37,6 @@ class Customer:
     def __repr__(self):
         return f"{self.name} is in {self.state}."
 
-    # def first_state(self):
-    #     '''
-    #     Sets the first aile for set customer
-    #     Returns nothing.
-    #     '''
-    #     self.state = np.random.choice(['spices', 'drinks', 'fruit', 'dairy'], p=proba.ent_prob)
 
     def next_state(self):
         """
